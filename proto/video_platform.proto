@@ -1,0 +1,276 @@
+syntax = "proto3";
+
+package videoplatform;
+
+option go_package = "video-platform/internal/api/grpc";
+option csharp_namespace = "VideoPlatform.Api";
+
+// 设备类型
+enum DeviceType {
+  DEVICE_TYPE_UNKNOWN = 0;
+  DEVICE_TYPE_ONVIF = 1;
+  DEVICE_TYPE_GB28181 = 2;
+  DEVICE_TYPE_RTSP = 3;
+}
+
+// 设备状态
+enum DeviceStatus {
+  DEVICE_STATUS_UNKNOWN = 0;
+  DEVICE_STATUS_ONLINE = 1;
+  DEVICE_STATUS_OFFLINE = 2;
+  DEVICE_STATUS_ERROR = 3;
+}
+
+// 流状态
+enum StreamStatus {
+  STREAM_STATUS_UNKNOWN = 0;
+  STREAM_STATUS_PLAYING = 1;
+  STREAM_STATUS_STOPPED = 2;
+  STREAM_STATUS_ERROR = 3;
+}
+
+// 会话状态
+enum SessionStatus {
+  SESSION_STATUS_UNKNOWN = 0;
+  SESSION_STATUS_ACTIVE = 1;
+  SESSION_STATUS_CLOSED = 2;
+  SESSION_STATUS_ERROR = 3;
+}
+
+// 设备信息消息
+message Device {
+  string id = 1;
+  string name = 2;
+  DeviceType type = 3;
+  string ip = 4;
+  int32 port = 5;
+  string username = 6;
+  string password = 7;
+  DeviceStatus status = 8;
+  string manufacturer = 9;
+  string model = 10;
+  string firmware = 11;
+  string serial_number = 12;
+  repeated Channel channels = 13;
+  int64 created_at = 14;
+  int64 updated_at = 15;
+}
+
+// 通道信息消息
+message Channel {
+  string id = 1;
+  string device_id = 2;
+  string name = 3;
+  string channel_id = 4;
+  string status = 5;
+  string stream_url = 6;
+  int64 created_at = 7;
+  int64 updated_at = 8;
+}
+
+// 流信息消息
+message Stream {
+  string id = 1;
+  string device_id = 2;
+  string channel_id = 3;
+  string name = 4;
+  string url = 5;
+  StreamStatus status = 6;
+  string protocol = 7;
+  string codec = 8;
+  string resolution = 9;
+  int32 bitrate = 10;
+  int64 created_at = 11;
+  int64 updated_at = 12;
+}
+
+// 会话信息消息
+message Session {
+  string id = 1;
+  string stream_id = 2;
+  string client_id = 3;
+  SessionStatus status = 4;
+  int64 start_time = 5;
+  int64 end_time = 6;
+  int64 created_at = 7;
+  int64 updated_at = 8;
+}
+
+// 发现设备请求
+message DiscoverDevicesRequest {
+  int32 timeout = 1;
+}
+
+// 发现设备响应
+message DiscoverDevicesResponse {
+  repeated Device devices = 1;
+}
+
+// 添加设备请求
+message AddDeviceRequest {
+  string name = 1;
+  DeviceType type = 2;
+  string ip = 3;
+  int32 port = 4;
+  string username = 5;
+  string password = 6;
+}
+
+// 添加设备响应
+message AddDeviceResponse {
+  Device device = 1;
+}
+
+// 获取设备请求
+message GetDeviceRequest {
+  string device_id = 1;
+}
+
+// 获取设备响应
+message GetDeviceResponse {
+  Device device = 1;
+}
+
+// 获取设备列表请求
+message GetDevicesRequest {
+}
+
+// 获取设备列表响应
+message GetDevicesResponse {
+  repeated Device devices = 1;
+}
+
+// 删除设备请求
+message DeleteDeviceRequest {
+  string device_id = 1;
+}
+
+// 删除设备响应
+message DeleteDeviceResponse {
+  bool success = 1;
+}
+
+// 获取设备状态请求
+message GetDeviceStatusRequest {
+  string device_id = 1;
+}
+
+// 获取设备状态响应
+message GetDeviceStatusResponse {
+  DeviceStatus status = 1;
+}
+
+// 启动流请求
+message StartStreamRequest {
+  string device_id = 1;
+  string channel_id = 2;
+  string protocol = 3;
+}
+
+// 启动流响应
+message StartStreamResponse {
+  Stream stream = 1;
+}
+
+// 停止流请求
+message StopStreamRequest {
+  string stream_id = 1;
+}
+
+// 停止流响应
+message StopStreamResponse {
+  bool success = 1;
+}
+
+// 获取流请求
+message GetStreamRequest {
+  string stream_id = 1;
+}
+
+// 获取流响应
+message GetStreamResponse {
+  Stream stream = 1;
+}
+
+// 获取流列表请求
+message GetStreamsRequest {
+}
+
+// 获取流列表响应
+message GetStreamsResponse {
+  repeated Stream streams = 1;
+}
+
+// 获取流地址请求
+message GetStreamUrlRequest {
+  string stream_id = 1;
+}
+
+// 获取流地址响应
+message GetStreamUrlResponse {
+  string url = 1;
+}
+
+// 创建会话请求
+message CreateSessionRequest {
+  string stream_id = 1;
+  string client_id = 2;
+}
+
+// 创建会话响应
+message CreateSessionResponse {
+  Session session = 1;
+}
+
+// 关闭会话请求
+message CloseSessionRequest {
+  string session_id = 1;
+}
+
+// 关闭会话响应
+message CloseSessionResponse {
+  bool success = 1;
+}
+
+// 获取会话请求
+message GetSessionRequest {
+  string session_id = 1;
+}
+
+// 获取会话响应
+message GetSessionResponse {
+  Session session = 1;
+}
+
+// 获取会话列表请求
+message GetSessionsRequest {
+}
+
+// 获取会话列表响应
+message GetSessionsResponse {
+  repeated Session sessions = 1;
+}
+
+// 视频平台服务
+service VideoPlatform {
+  // 设备管理
+  rpc DiscoverDevices(DiscoverDevicesRequest) returns (DiscoverDevicesResponse);
+  rpc AddDevice(AddDeviceRequest) returns (AddDeviceResponse);
+  rpc GetDevice(GetDeviceRequest) returns (GetDeviceResponse);
+  rpc GetDevices(GetDevicesRequest) returns (GetDevicesResponse);
+  rpc DeleteDevice(DeleteDeviceRequest) returns (DeleteDeviceResponse);
+  rpc GetDeviceStatus(GetDeviceStatusRequest) returns (GetDeviceStatusResponse);
+  
+  // 流媒体管理
+  rpc StartStream(StartStreamRequest) returns (StartStreamResponse);
+  rpc StopStream(StopStreamRequest) returns (StopStreamResponse);
+  rpc GetStream(GetStreamRequest) returns (GetStreamResponse);
+  rpc GetStreams(GetStreamsRequest) returns (GetStreamsResponse);
+  rpc GetStreamUrl(GetStreamUrlRequest) returns (GetStreamUrlResponse);
+  
+  // 会话管理
+  rpc CreateSession(CreateSessionRequest) returns (CreateSessionResponse);
+  rpc CloseSession(CloseSessionRequest) returns (CloseSessionResponse);
+  rpc GetSession(GetSessionRequest) returns (GetSessionResponse);
+  rpc GetSessions(GetSessionsRequest) returns (GetSessionsResponse);
+}
