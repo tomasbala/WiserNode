@@ -1,0 +1,20 @@
+server:
+  id: "34020000002000000001"
+  domain: "3402000000"
+  host: "0.0.0.0"
+  sip_port: 5060
+  http_port: 8080
+  password: "12345678"
+
+zlmediakit:
+  host: "127.0.0.1"
+  http_port: 80
+  secret: "035c73f7-bb6b-4889-a715-d9eb2d1925cc"
+
+device:
+  heartbeat_timeout: 60
+  register_expire: 3600
+
+log:
+  level: "info"
+  output: "stdout"
